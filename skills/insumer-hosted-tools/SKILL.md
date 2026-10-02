@@ -1,13 +1,15 @@
 ---
 name: insumer-hosted-tools
 description: >
-  How to use the InsumerAPI MCP tools that this plugin connects to (the hosted
+  How to use the InsumerAPI MCP tools this plugin connects to (the hosted
   server at api.insumermodel.com/mcp, no key needed). Use when the user asks
-  InsumerAPI for a signed yes or no about what a wallet holds, a wallet trust
-  profile, the public signing keys, compliance templates, or the merchant and
-  token directories, and the insumer MCP tools are available. Explains the
-  shared daily allowance and when to switch to the REST skills with the user's
-  own key.
+  to check if a wallet holds a token or an amount, whether a wallet owns an
+  NFT, whether a wallet is a registered ERC-8004 agent, for a wallet trust
+  profile, for InsumerAPI's signing keys or how to verify an attestation, for
+  compliance templates, or for a merchant's discount, and the insumer MCP
+  tools are available. Do not use for exact balances, prices, or sending
+  transactions. Explains the shared daily allowance and when to switch to the
+  REST skills with the user's own key.
 metadata:
   version: "0.1.0"
   author: InsumerAPI

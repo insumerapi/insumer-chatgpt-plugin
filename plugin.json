@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "insumer",
   "version": "0.1.0",
-  "description": "InsumerAPI wallet auth for AI agents: send a wallet and conditions, get a signed boolean across 37 chains, never the balance. Six skills plus the hosted MCP server at api.insumermodel.com/mcp.",
+  "description": "Check what a wallet holds, with a signed yes or no. InsumerAPI wallet auth for AI agents: token balances, NFTs, EAS attestations, ERC-8004 agents and trust profiles across 37 chains, never the balance. Six skills plus the hosted MCP server at api.insumermodel.com/mcp.",
   "author": {
     "name": "InsumerAPI",
     "email": "support@insumermodel.com",
@@ -15,6 +15,11 @@
     "insumer",
     "insumerapi",
     "wallet auth",
+    "check wallet balance",
+    "verify wallet",
+    "nft ownership",
+    "wallet trust profile",
+    "erc-8004",
     "condition-based access",
     "blockchain",
     "attestation",
@@ -26,17 +31,19 @@
       "interface": {
         "displayName": "InsumerAPI",
         "shortDescription": "Wallet auth for AI agents",
-        "longDescription": "InsumerAPI answers one question about a blockchain wallet with a signed yes or no: does this wallet satisfy this condition right now? Send a wallet address and up to ten conditions, get back a boolean for each, signed and verifiable offline against published keys. The balance itself is never returned.\n\nConditions cover token balances, NFT ownership, EAS attestations (including Coinbase Verifications and Gitcoin Passport templates), Farcaster IDs, ERC-8004 agent registration and ERC-7710 delegations, across 37 chains: 31 EVM chains plus Solana, XRP Ledger, Bitcoin, Tron, Stellar and Sui. A wallet trust profile runs 145 checks across 27 chains in nine dimensions and reports what is held or not held, with no score and no opinion.\n\nEvery response carries an ECDSA signature and a post-quantum companion signature (ML-DSA-65), a hash of the evaluated condition, and the block it was read at. Anyone can check a result without calling InsumerAPI again, using the open-source insumer-verify package on npm and PyPI.\n\nThis plugin connects to the hosted InsumerAPI MCP server, which needs no account and no key. It serves ten tools: the public signing keys, condition attestation, compliance templates, wallet trust profiles (single and batch), the merchant and token directories, a free discount check, and discount-code validation. The tools that produce signed results share one free daily allowance across all users of the hosted server; once it is used up, calls are declined until 00:00 UTC with a pointer to a free API key. The six included skills cover the same work through the REST API with your own key, which gives you your own allowance, key and credit management, and the merchant tools.\n\nWhat InsumerAPI is not: it holds no secrets, requires no identity, issues no static credentials, and stores no wallet addresses or conditions from verification requests. It is condition-based access infrastructure, and wallet auth is how it works: read the wallet's on-chain state, evaluate it against the condition, sign the answer.\n\nDocumentation: https://insumermodel.com/developers/\nOpenAPI: https://insumermodel.com/openapi.yaml\nSource for the MCP server (MIT): https://github.com/insumerapi/mcp-server-insumer",
+        "longDescription": "Ask ChatGPT things like \"check if this wallet holds at least 100 USDC on Base\", \"does this wallet own an NFT from this collection\", \"is this wallet a registered ERC-8004 agent\", \"build a trust profile for this wallet\", \"verify this wallet attestation offline\" or \"what discount does this wallet get at this merchant\". InsumerAPI answers each one with a signed yes or no: does this wallet satisfy this condition right now? The balance itself is never returned.\n\nConditions cover token balances, NFT ownership, EAS attestations (including Coinbase Verifications and Gitcoin Passport templates), Farcaster IDs, ERC-8004 agent registration and ERC-7710 delegations, across 37 chains: 31 EVM chains plus Solana, XRP Ledger, Bitcoin, Tron, Stellar and Sui. Send a wallet address and up to ten conditions in one request. A wallet trust profile runs 145 checks across 27 chains in nine dimensions and reports what is held or not held, with no score and no opinion.\n\nEvery response carries an ECDSA signature and a post-quantum companion signature (ML-DSA-65), a hash of the evaluated condition, and the block it was read at. Anyone can check a result without calling InsumerAPI again, using the open-source insumer-verify package on npm and PyPI.\n\nThis plugin connects to the hosted InsumerAPI MCP server, which needs no account and no key. It serves ten tools: the public signing keys, condition attestation, compliance templates, wallet trust profiles (single and batch), the merchant and token directories, a free discount check, and discount-code validation. The tools that produce signed results share one free daily allowance across all users of the hosted server; once it is used up, calls are declined until 00:00 UTC with a pointer to a free API key. The six included skills cover the same work through the REST API with your own key, which gives you your own allowance, key and credit management, and the merchant tools.\n\nNot for: exact balances, portfolio values, price data, sending transactions, or trading. InsumerAPI holds no secrets, requires no identity, issues no static credentials, and stores no wallet addresses or conditions from verification requests. It is condition-based access infrastructure, and wallet auth is how it works: read the wallet's on-chain state, evaluate it against the condition, sign the answer.\n\nDocumentation: https://insumermodel.com/developers/\nOpenAPI: https://insumermodel.com/openapi.yaml\nSource for the MCP server (MIT): https://github.com/insumerapi/mcp-server-insumer",
         "developerName": "InsumerAPI",
         "category": "Developer Tools",
-        "capabilities": ["Read"],
+        "capabilities": [
+          "Read"
+        ],
         "websiteURL": "https://insumermodel.com",
         "privacyPolicyURL": "https://insumermodel.com/privacy-policy/",
         "termsOfServiceURL": "https://insumermodel.com/terms-of-service/",
         "defaultPrompt": [
-          "Use InsumerAPI to check whether wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 holds at least 1 ETH on Ethereum and show me the signed attestation.",
-          "Use InsumerAPI to build a wallet trust profile for 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 and summarize each dimension.",
-          "Use InsumerAPI to list its current signing keys and explain how to verify an attestation offline."
+          "Check if wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 holds at least 1 ETH on Ethereum and show me the signed attestation.",
+          "Build a trust profile for wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 and summarize each dimension.",
+          "Is wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 a registered ERC-8004 agent with agent ID 1 on Base?"
         ],
         "brandColor": "#D4A853",
         "composerIcon": "./assets/icon.png",
