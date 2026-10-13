@@ -1,6 +1,6 @@
 # Review form entries for version 0.2.0
 
-What is saved in the review form at platform.openai.com for the 0.2.0 draft (read back from the portal on 2026-10-13). The form keeps its entries across a cancelled review and a new upload. Three positive cases were edited that day: case 1 (expected output), case 3 (ten dimensions) and case 5 (a store that is in the public directory). The three negative cases and the video link are the 2026-10-02 originals, unchanged.
+What is saved in the review form at platform.openai.com for the 0.2.0 draft (read back from the portal on 2026-10-13). The form keeps its entries across a cancelled review and a new upload. Three positive cases were edited that day: case 1 (expected output), case 3 (ten dimensions) and case 5 (a store that is in the public directory). The three negative cases are the 2026-10-02 originals, unchanged. The video link is the 2026-10-13 recording, which shows these eight cases.
 
 ## Positive cases (the plugin should be used)
 
@@ -37,7 +37,7 @@ What is saved in the review form at platform.openai.com for the 0.2.0 draft (rea
 
 ## Demo video
 
-https://youtu.be/N0fuqh8RWvE
+https://youtu.be/mM-Eq7q4Vgo
 
 ## Release notes
 
