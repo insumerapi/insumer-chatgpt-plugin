@@ -1,6 +1,6 @@
 # Review form entries for version 0.2.0
 
-What goes into the review form at platform.openai.com when the package is submitted. The five positive cases are P1 to P5 from `test-cases.md`. The three negative cases are prompts where the plugin must not trigger; they follow the topics entered on 2026-10-02 (the exact wording entered then was not kept).
+What is saved in the review form at platform.openai.com for the 0.2.0 draft (read back from the portal on 2026-10-13). The form keeps its entries across a cancelled review and a new upload. Three positive cases were edited that day: case 1 (expected output), case 3 (ten dimensions) and case 5 (a store that is in the public directory). The three negative cases and the video link are the 2026-10-02 originals, unchanged.
 
 ## Positive cases (the plugin should be used)
 
@@ -26,14 +26,14 @@ What goes into the review form at platform.openai.com when the package is submit
 
 ## Negative cases (the plugin should not be used)
 
-1. **Prompt:** What is the price of ETH right now?
-   **Why not:** Price data. InsumerAPI answers whether a wallet meets a condition; it returns no prices.
+1. **Scenario:** Price question: the user wants a market price, which InsumerAPI does not provide. The plugin should not be invoked; a web search or no tool is correct.
+   **Prompt:** What is the current price of ETH in USD?
 
-2. **Prompt:** Send 0.5 ETH from my wallet to 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045.
-   **Why not:** Sending a transaction. InsumerAPI reads wallet state; it never moves funds or signs for a wallet.
+2. **Scenario:** Transaction request: the user wants to send funds. InsumerAPI reads wallet state and never sends transactions, so the plugin should not be invoked.
+   **Prompt:** Send 0.5 ETH from my wallet to 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045.
 
-3. **Prompt:** I lost my hardware wallet. How do I get my funds back?
-   **Why not:** Wallet recovery advice. No on-chain condition is being checked.
+3. **Scenario:** Non-crypto use of the word wallet: the user is asking about a physical wallet, not a blockchain address. The plugin should not be invoked.
+   **Prompt:** I lost my wallet on the train yesterday. What should I do first, cancel my cards or file a police report?
 
 ## Demo video
 
@@ -41,4 +41,4 @@ https://youtu.be/N0fuqh8RWvE
 
 ## Release notes
 
-Version 0.2.0. Adds the insumer-discount skill (a signed discount code at a merchant, through the REST API with your own key). The wallet trust profile is 155 checks across 27 chains in ten dimensions. Adds the account code condition (plain key, EIP-7702 delegation or contract). The bundled skills are updated to match the current API.
+0.2.0: first release. Connects to the hosted InsumerAPI MCP server (api.insumermodel.com/mcp, no account or key) with ten tools: signing keys, condition attestation, compliance templates, wallet trust profiles (single and batch), the merchant and token directories, a discount check, and discount-code validation. Seven skills are included; six cover the same work through the REST API with your own key, including discount codes. Every signed result is signed twice, with ES256 and with a post-quantum ML-DSA-65 signature, and is verifiable offline with insumer-verify. The shared server is rate limited per day; when the limit is reached, signed-result tools are declined until 00:00 UTC.
