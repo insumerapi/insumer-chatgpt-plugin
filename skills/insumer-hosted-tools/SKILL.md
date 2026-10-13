@@ -11,7 +11,7 @@ description: >
   transactions. Explains the shared daily allowance and when to switch to the
   REST skills with the user's own key.
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   author: InsumerAPI
 ---
 
@@ -28,7 +28,7 @@ This plugin connects to InsumerAPI's hosted MCP server. The tools need no accoun
 | `insumer_jwks` | The public signing keys: an ECDSA P-256 key under its kids, then the ML-DSA-65 post-quantum key | No |
 | `insumer_attest` | Signed yes or no for 1 to 10 conditions on one wallet, across 37 chains | Yes |
 | `insumer_compliance_templates` | Named EAS templates (Coinbase Verifications, Gitcoin Passport) usable as conditions | No |
-| `insumer_wallet_trust` | Signed trust profile for one EVM wallet: 145 base checks across 27 chains in nine dimensions, held or not held, no score | Yes |
+| `insumer_wallet_trust` | Signed trust profile for one EVM wallet: 155 base checks across 27 chains in ten dimensions, held or not held, no score | Yes |
 | `insumer_batch_wallet_trust` | Trust profiles for up to 10 wallets in one call | Yes, per wallet |
 | `insumer_list_merchants` | The public merchant directory | No |
 | `insumer_get_merchant` | One merchant's public profile: token tiers, NFT collections, discount mode | No |
@@ -52,7 +52,7 @@ The hosted server runs on one shared allowance for the tools that produce signed
 When that happens, or when the user needs more than occasional calls, key and credit management, or the merchant tools:
 
 1. Tell the user plainly that the shared allowance is used up for today.
-2. Offer the user's own free key: the `insumer-auth` skill creates one with an email address (10 verifications plus 100 reads a day, no card), and the `insumer-attest`, `insumer-trust` and `insumer-trust-batch` skills call the REST API with it.
+2. Offer the user's own free key: the `insumer-auth` skill creates one with an email address (10 verifications plus 100 requests a day, no card), and the `insumer-attest`, `insumer-trust` and `insumer-trust-batch` skills call the REST API with it.
 3. Never ask the user to paste an API key into the chat for use with the hosted tools. The hosted tools take no key. A key belongs in the user's own environment, as the REST skills describe.
 
 ## What not to claim
@@ -66,4 +66,5 @@ When that happens, or when the user needs more than occasional calls, key and cr
 
 - `insumer-attest`, `insumer-trust`, `insumer-trust-batch`: the same operations over REST with the user's own key, with the full request and response shapes.
 - `insumer-auth`: getting and topping up a key.
+- `insumer-discount`: a signed discount code at an InsumerAPI merchant, over REST with the user's own key.
 - `insumer-jwks-verify`: verifying any signed response offline.

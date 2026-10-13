@@ -22,7 +22,7 @@ The wallet used throughout is `0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045` (vita
 
 **Prompt:** Use InsumerAPI to build a wallet trust profile for 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 and summarize each dimension.
 
-**Expected:** `insumer_wallet_trust` is called. The answer lists the nine dimensions with held / not-held counts, the profile ID (`TRST-…`), `conditionSetVersion`, and `kid: insumer-trust-v2`. It does not present a score or ranking, because the profile has none.
+**Expected:** `insumer_wallet_trust` is called. The answer lists the ten dimensions with held / not-held counts, the profile ID (`TRST-…`), `conditionSetVersion`, and `kid: insumer-trust-v2`. It does not present a score or ranking, because the profile has none.
 
 ### P4. Public signing keys
 

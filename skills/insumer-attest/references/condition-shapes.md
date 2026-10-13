@@ -1,6 +1,6 @@
 # Condition Shapes
 
-Every condition object passed in `/v1/attest` (`conditions[]` array, 1–10 items) has a shape determined by its `type` field. The API accepts nine condition types. This file documents the four core shapes (`token_balance`, `nft_ownership`, `eas_attestation`, `farcaster_id`). The other five (`evm_view_call`, `ratio_to_amount`, `ratio_to_supply`, `erc8004_agent`, `erc7710_delegation`) are listed with their required fields under Capabilities in this skill's `SKILL.md` and specified in full in the [OpenAPI spec](https://insumermodel.com/openapi.yaml).
+Every condition object passed in `/v1/attest` (`conditions[]` array, 1–10 items) has a shape determined by its `type` field. The API accepts ten condition types. This file documents five shapes (`token_balance`, `nft_ownership`, `eas_attestation`, `farcaster_id`, `account_code`). The other five (`evm_view_call`, `ratio_to_amount`, `ratio_to_supply`, `erc8004_agent`, `erc7710_delegation`) are listed with their required fields under Capabilities in this skill's `SKILL.md` and specified in full in the [OpenAPI spec](https://insumermodel.com/openapi.yaml).
 
 ## 1. `token_balance`
 
@@ -20,9 +20,10 @@ Threshold check on a fungible token balance.
 |---|---|---|
 | `contractAddress` | yes | Token contract (0x + 40 hex on EVM), or `"native"` for the chain's native coin. `"native"` is for `token_balance` and `ratio_to_amount` only. For XRPL: `"native"` for XRP, or the issuer r-address for trust lines. For Bitcoin: must be `"native"`. For Sui: always a coin type (`address::module::Name`); native SUI is `"0x2::sui::SUI"` and `"native"` is a `400`. |
 | `chainId` | yes | Numeric for EVM, `"solana"`/`"xrpl"`/`"bitcoin"`/`"tron"`/`"stellar"`/`"sui"` for non-EVM |
-| `threshold` | yes | Minimum balance in **human units**, as a **decimal string** (`"100"`, `"0.000001"` — not a JSON number). Keys signing with `kid: insumer-attest-v2` (created from 2026-06-10) reject a number with a `400`; a string is accepted by v1 and v2 alike. Must be `> 0` (use `"0.000001"` for prove-any-balance). |
-| `decimals` | optional | Cross-check only; leave it out. The token's own decimals are always read from the chain. If sent, a value that differs from the token's own decimals is rejected with a `400`. |
-| `currency` | XRPL only | Trust line currency code (e.g. `"RLUSD"`, `"USDC"`) |
+| `threshold` | yes | Minimum balance in **human units**, as a **decimal string** (`"100"`, `"0.000001"`, not a JSON number). Keys signing with `kid: insumer-attest-v2` (created from 2026-06-10) reject a number with a `400`; a string is accepted by v1 and v2 alike. Must be `> 0` (use `"0.000001"` for prove-any-balance). |
+| `decimals` | optional | Cross-check only; leave it out. The token's own decimals are always read from the chain. If sent, on EVM chains, Tron and Sui a value that differs from the token's own decimals is rejected with a `400`. |
+| `assetCode` | Stellar trustline tokens only | The asset code of a classic trustline asset; `contractAddress` is then the issuer G-address. Not used for native XLM |
+| `currency` | XRPL only | Trust line currency code (e.g. `"RLUSD"`, `"USDC"`). Case-sensitive: send it exactly as issued |
 | `label` | recommended | Human-readable label (max 100 chars) |
 
 Operator: `gte` (>=).
@@ -42,7 +43,7 @@ Check whether the wallet owns at least one NFT in a collection.
 
 | Field | Required | Notes |
 |---|---|---|
-| `contractAddress` | yes | NFT contract address (ERC-721 or ERC-1155 on EVM, NFToken issuer on XRPL). 0x + 40 hex on EVM; `"native"` is a `400` here (use `token_balance` for the native coin). |
+| `contractAddress` | yes | NFT contract address (ERC-721 style on EVM, NFToken issuer on XRPL). 0x + 40 hex on EVM; `"native"` is a `400` here (use `token_balance` for the native coin). |
 | `chainId` | yes | |
 | `taxon` | XRPL only | Filter by issuer + taxon (optional, NFToken filtering on XRPL) |
 | `label` | recommended | |
@@ -63,7 +64,7 @@ Verify the wallet has a valid EAS (Ethereum Attestation Service) attestation.
 }
 ```
 
-Available templates (current list — fetch live from `GET https://api.insumermodel.com/v1/compliance/templates`):
+Available templates (current list; fetch live from `GET https://api.insumermodel.com/v1/compliance/templates`):
 
 | Template | Provider | Chain |
 |---|---|---|
@@ -94,7 +95,7 @@ Available templates (current list — fetch live from `GET https://api.insumermo
 | `indexer` | with schemaId | EAS indexer contract address |
 | `chainId` | with schemaId | EAS is read on Ethereum (1), Optimism (10), Polygon (137), Base (8453) and Arbitrum (42161) only |
 
-Operator: `valid`.
+Operator: `valid`, or `decoder` for the two Gitcoin Passport templates, whose signed condition carries `decoder` and `decoderMethod` in place of `schemaId`.
 
 ## 4. `farcaster_id`
 
@@ -108,6 +109,47 @@ Check whether the wallet has a registered Farcaster ID.
 ```
 
 Operator: `registered`.
+
+## 5. `account_code`
+
+Check the code state of the wallet address itself at the anchored block: a plain key account, an EIP-7702 delegation designator, or contract code. EVM chains only.
+
+```json
+{
+  "type": "account_code",
+  "chainId": 8453,
+  "expect": "eip7702",
+  "label": "EIP-7702 delegation on Base"
+}
+```
+
+| Field | Required | Notes |
+|---|---|---|
+| `chainId` | yes | Numeric EVM chain id (any of the 31 EVM chains). A non-EVM `chainId` (`"solana"`, `"xrpl"`, ...) is a `400` |
+| `expect` | yes | `"none"`: no code (a plain key account). `"eip7702"`: the EIP-7702 delegation designator (a key that has delegated execution to a contract). `"contract"`: any other code (a smart-contract wallet, a protocol, a token). The three states are exclusive on a chain |
+| `delegate` | optional | An EVM address, only with `expect: "eip7702"` (a `400` with any other `expect`). Met only when the designator points at this address. Echoed, lowercase, inside the signed `evaluatedCondition` |
+| `label` | recommended | |
+
+Operator: `code_state`. The result is the boolean `met`, like every type; the code and the delegation target are never returned, in any format or mode. 1 credit (2 in proof mode, refunded to 1 when no proof is delivered); 30-minute expiry; `format: "jwt"` works and `sub` is the wallet. A read that does not complete is a `503` `rpc_failure`, never `met: false`.
+
+Real example on Base, wallet `0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045` (which carries an EIP-7702 delegation designator on Base, Ethereum and Optimism):
+
+```json
+{
+  "wallet": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+  "conditions": [{ "type": "account_code", "chainId": 8453, "expect": "eip7702" }]
+}
+```
+
+returns `met: true` with the signed
+
+```json
+{ "type": "account_code", "chainId": 8453, "expect": "eip7702", "operator": "code_state" }
+```
+
+as `evaluatedCondition` and `conditionHash` `0x6c5752bfbfcfd6ba36c9cda6c74df567f0e0414da6b7a3176061ba734aeadc46`. A supplied `delegate` appears as a fifth key, `"delegate": "0x…"` (lowercase), and the hash recomputes from the whole object under both signing schemes.
+
+Proof mode (`proof: "merkle"`) attaches an EIP-1186 account proof with `subject: "account_code"` and the fields `blockNumber`, `nonce`, `balance`, `storageHash`, `codeHash`, `accountProof`. `codeHash` is the proven value: keccak256 of empty code (`0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470`) means no code; keccak256 of `0xef0100` followed by the 20-byte target means an EIP-7702 delegation to that target (checkable only with the `delegate` the verifier supplies); anything else means contract code. An account absent from the state trie may report all zeros, which also means no code. ZKsync Era (324), Sei (1329), Viction (88) and XDC Network (50) serve no proofs and decline as unsupported.
 
 ## Composing multiple conditions
 

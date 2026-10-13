@@ -3,7 +3,7 @@
 #
 #   ./build.sh            # vendors the skills, scans, writes dist/insumer-plugin-<version>.zip
 #
-# The five REST skills are vendored from ../insumer-agent-skills (the same
+# The six REST skills are vendored from ../insumer-agent-skills (the same
 # source as the Grok plugin); SKILLS_SOURCE records the commit. The ZIP is
 # refused if anything in it looks like a secret, an internal hostname, or a
 # vendor name that never appears in public material.
@@ -15,7 +15,7 @@ VERSION="$(python3 -c 'import json;print(json.load(open("plugin.json"))["version
 OUT="dist/insumer-plugin-${VERSION}.zip"
 
 # 1. Vendor the skills (SKILL.md, references, scripts; no caches).
-for s in insumer-auth insumer-attest insumer-trust insumer-trust-batch insumer-jwks-verify; do
+for s in insumer-auth insumer-attest insumer-trust insumer-trust-batch insumer-jwks-verify insumer-discount; do
   rm -rf "skills/$s"
   rsync -a --exclude '__pycache__' --exclude '*.pyc' "$SKILLS_REPO/skills/$s/" "skills/$s/"
 done
@@ -45,8 +45,16 @@ if grep -rEn "$PATTERN" plugin.json mcp.json skills assets README.md LICENSE 2>/
   echo "REFUSED: the lines above must not ship." >&2
   exit 1
 fi
-# 64-hex strings are allowed only as the documented public EAS schema IDs.
-if grep -rEn '0x[0-9a-fA-F]{64}' skills plugin.json mcp.json | grep -v 'schemaId' ; then
+# 64-hex strings are allowed only as the documented public EAS schema IDs, or as
+# one of the exact public values listed here. Each was recomputed from public
+# inputs before it was added; a new 64-hex value stops the build until someone
+# has done the same for it.
+#   c5d246...a470  keccak256 of empty input (an account with no code)
+#   fd7b6a...ccbc  conditionHash of {type account_code, chainId 1, expect contract, operator code_state}
+#   def6fa...f18b  conditionHash of {type account_code, chainId 1, expect eip7702, operator code_state}
+#   6c5752...dc46  conditionHash of {type account_code, chainId 8453, expect eip7702, operator code_state}
+PUBLIC_HEX='0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470|0xfd7b6aa42eb012184fa54d9d5d99c6ab18481e0ce33ec0ec0e9d28d37b54ccbc|0xdef6fadcef95f59f4621fa2bf788e6be0ffc0492dba22038999b8cd757adf18b|0x6c5752bfbfcfd6ba36c9cda6c74df567f0e0414da6b7a3176061ba734aeadc46'
+if grep -rEn '0x[0-9a-fA-F]{64}' skills plugin.json mcp.json | grep -v 'schemaId' | sed -E "s/($PUBLIC_HEX)//g" | grep -E '0x[0-9a-fA-F]{64}' ; then
   echo "REFUSED: unexplained 64-hex value above (private key shaped)." >&2
   exit 1
 fi

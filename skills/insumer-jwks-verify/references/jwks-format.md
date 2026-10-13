@@ -73,7 +73,7 @@ For `/v1/attest` (raw form), the signed preimage is selected by `data.kid`:
 - `insumer-attest-v1`: the bare `JSON.stringify({ id, pass, results, attestedAt })` in that insertion order.
 - Signed through `results`: every `evaluatedCondition`, `conditionHash`, `met`, and each result's chain anchor (`blockNumber`/`blockTimestamp`, or `slot`, `ledgerIndex`, `blockHeight`, `checkpointSequence`).
 - NOT signed: `expiresAt` (bound to the signed `attestedAt` by spec Check 4), `passCount`/`failCount`, and the wallet itself. For most condition types the raw form does not name the wallet at all. In JWT form the wallet is the signed `sub` claim.
-- Beside `sig`/`kid`, every response also carries `pqSig`/`pqKid` (ML-DSA-65 over the post-quantum domain tag plus the same classical preimage); in JWT form a sibling `pqJwt`.
+- Beside `sig`/`kid`, responses also carry `pqSig`/`pqKid` (ML-DSA-65 over the post-quantum domain tag plus the same classical preimage); in JWT form a sibling `pqJwt`. These fields are optional: a stored artifact without them reads as `absent`.
 
 For `/v1/trust` and `/v1/trust/batch`, selected by `kid`:
 - `insumer-trust-v2`: `"insumer.trust.v2" + "\n" + canonical_json(trust)` where `trust` is the whole returned object (`id`, `wallet`, `conditionSetVersion`, `dimensions`, `summary`, `profiledAt`, `expiresAt`), no `v` member.
@@ -82,13 +82,13 @@ For `/v1/trust` and `/v1/trust/batch`, selected by `kid`:
 
 ## JWT claim mapping
 
-`format: "jwt"` is available on `POST /v1/attest` only; `/v1/trust` and `/v1/trust/batch` return the raw `sig` form alone. When it is requested, the response includes a `data.jwt` field (and a sibling `data.pqJwt`, the post-quantum companion over the same claim set) with these claims:
+`format: "jwt"` is available on `POST /v1/attest` only; `/v1/trust` and `/v1/trust/batch` return the raw `sig` form alone. When it is requested, the response includes a `data.jwt` field (and a sibling `data.pqJwt`, the same claim set under the post-quantum signature) with these claims:
 
 | Claim | Source | Meaning |
 |---|---|---|
 | `iss` | `https://api.insumermodel.com` | Issuer |
 | `sub` | wallet address | Subject: the wallet a condition in the request evaluated (with conditions across chain families, the first in the order EVM, Solana, XRPL, Bitcoin, Tron, Stellar, Sui) |
-| `jti` | unique attestation ID | JWT ID — useful for replay defense |
+| `jti` | unique attestation ID | JWT ID, useful for replay defense |
 | `iat` | unix timestamp | Issued at |
 | `exp` | iat + 30 min, or iat + 5 min when the request carries an `erc7710_delegation` condition | Expiration, equal to the attestation's `expiresAt` |
 | `pass` | boolean | Overall verification result |
@@ -119,32 +119,34 @@ def recompute_condition_hash(evaluated_condition: dict) -> str:
     return "0x" + digest
 ```
 
-This is belt-and-suspenders — the JWT signature already covers `conditionHash` — but it lets a downstream service confirm the exact predicate, not just that *some* result was signed.
+**Limit of this function on `insumer-attest-v1` results.** A v1 result carries its numbers as JSON numbers (`threshold`, and `multiple`, `amount` and `minFraction` on the ratio conditions), and Python's `json.dumps` prints a number from `0.000000001` up to, but not including, `0.0001` differently from JavaScript (for example `0.000001`, which JavaScript writes as `0.000001` and Python as `1e-06`). For a value in that range this function returns a different hash for a genuine response. Use `insumer-verify` (`pip install insumer-verify`) for v1 results; it reproduces JavaScript's number printing. v2 results carry these values as strings and are unaffected.
+
+This is belt-and-suspenders: the JWT signature already covers `conditionHash`. It lets a downstream service confirm the exact predicate, not just that *some* result was signed.
 
 ## Key rotation
 
-Key changes are additive and signalled by the `kid` on each response. To date no kid has been removed from the JWKS: the v2 scheme (2026-06) added kids beside `insumer-attest-v1`, and the post-quantum companion (2026-09) added the two `AKP` entries beside the EC ones. Old kids keep verifying the artifacts they signed. A kid that does not resolve is unverifiable, not refuted.
+Key changes are additive and signalled by the `kid` on each response. To date no kid has been removed from the JWKS: the v2 scheme (2026-06) added kids beside `insumer-attest-v1`, and the post-quantum key (2026-09) added the two `AKP` entries beside the EC ones. Old kids keep verifying the artifacts they signed. A kid that does not resolve is unverifiable, not refuted.
 
 Verifiers should:
 - Always look up the public key by `kid` (don't hardcode)
 - Use `createRemoteJWKSet` (jose) or `PyJWKClient` (PyJWT) for automatic refresh
-- Never cache the public key directly — cache the JWKS document and let the library handle key lookup
+- Never cache the public key directly: cache the JWKS document and let the library handle key lookup
 
 ## Failure modes
 
 | Symptom | Likely cause | Action |
 |---|---|---|
-| `unknown kid` after rotation | Stale JWKS cache | Force refresh; if persistent, kid was retired |
+| `unknown kid` | A stale JWKS cache, or a result InsumerAPI did not sign | Force a refresh. Kids are never removed, so one that still does not resolve is unverifiable: do not accept the result |
 | `JWT signature invalid` | Payload tampered or wrong key | Reject; do not retry with different keys |
 | `JWT expired` (`exp` in past) | Past its `exp` (30 min, or 5 with a delegation condition) | Re-request a fresh attestation |
 | `JWT issuer mismatch` | Response not from InsumerAPI | Reject |
-| `algorithm not allowed` | Verifier didn't pin ES256 | Always pass `algorithms: ['ES256']` |
+| `algorithm not allowed` | The token's `alg` is not in the pinned list, typically `pqJwt` (ML-DSA-65) handed to the ES256 recipe | Verify `jwt` with the ES256 recipe; verify `pqJwt` with `insumer-verify` |
 
 ## Library-specific gotchas
 
 ### `jose` (Node)
-- `createRemoteJWKSet` caches with `cooldownDuration` and `cacheMaxAge` — defaults are sane, don't override unless you know why
-- Always pass `algorithms: ['ES256']` to `jwtVerify` — never accept `none` or default
+- `createRemoteJWKSet` caches with `cooldownDuration` and `cacheMaxAge`: the defaults are sane, don't override them unless you know why
+- Always pass `algorithms: ['ES256']` to `jwtVerify`. Never accept `none` or the default
 
 ### `PyJWT` (Python)
 - Requires `pip install 'pyjwt[crypto]'` (the `cryptography` extra) for ES256 support
@@ -157,7 +159,7 @@ Verifiers should:
 
 ## See also
 
-- [SKILL.md](../SKILL.md) — usage examples and code emission rules
+- [SKILL.md](../SKILL.md): usage examples and code emission rules
 - [JWT spec (RFC 7519)](https://datatracker.ietf.org/doc/html/rfc7519)
 - [JWS spec (RFC 7515)](https://datatracker.ietf.org/doc/html/rfc7515)
 - [JWK spec (RFC 7517)](https://datatracker.ietf.org/doc/html/rfc7517)

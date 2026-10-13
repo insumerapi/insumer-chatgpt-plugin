@@ -2,14 +2,15 @@
 """
 Buy an InsumerAPI key with USDC, USDT, or BTC (agent-onboarding path).
 
-Path 3 of 4 (see ../SKILL.md). No email required — sender wallet from the
+Path 3 of 4 (see ../SKILL.md). No email required: sender wallet from the
 on-chain transaction becomes the key's identity. This script never sends
 funds: make the payment with your own wallet, only after the user has approved
 the amount, token, chain and recipient, then call this with its transaction hash.
 
 It sends keyDelivery "apiKey" so the key string is returned. With the API's
-default ("wallet"), an EVM purchase returns no key: the paying wallet gets an
-Insumer Access pass and authenticates with Authorization: Wallet instead.
+default ("wallet"), an EVM purchase that issues an Insumer Access pass to the
+paying wallet returns no key: that wallet authenticates with Authorization: Wallet
+instead.
 
 Platform wallets:
   EVM:     0xAd982CB19aCCa2923Df8F687C0614a7700255a23
@@ -22,8 +23,9 @@ be recovered): USDC/USDT on Ethereum (1), Base (8453), Polygon (137),
 Arbitrum (42161), Optimism (10), BNB Chain (56), Avalanche (43114) or Solana;
 USDT-TRC20 on Tron; BTC on Bitcoin.
 
-Volume discounts: $5–$99 → $0.04/credit, $100–$499 → $0.03/credit (25% off),
-                  $500+ → $0.02/credit (50% off).
+Volume discounts: $5–$99 → 25 credits per $1 ($0.04/credit),
+                  $100–$499 → 33 credits per $1 (about $0.03/credit),
+                  $500+ → 50 credits per $1 ($0.02/credit).
 
 appName defaults to "insumer-agent-skills", a label on the key that tells
 InsumerAPI which channel the key came from. Pass --app-name to use your own.
