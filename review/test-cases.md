@@ -10,7 +10,7 @@ The wallet used throughout is `0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045` (vita
 
 **Prompt:** Use InsumerAPI to check whether wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 holds at least 1 ETH on Ethereum, and show me the attestation ID and signing key IDs.
 
-**Expected:** `insumer_attest` is called with `chainId: 1`, `contractAddress: "native"`, `threshold: "1"`. The answer reports `met: true`, an attestation ID (`ATST-…`), `kid: insumer-attest-v2`, `pqKid: insumer-attest-pq1`, and the block the state was read at. No balance figure appears anywhere.
+**Expected:** `insumer_attest` is called with `chainId: 1`, `contractAddress: "native"`, `threshold: "1"`. The answer reports `met: true`, an attestation ID (`ATST-…`), `kid: insumer-attest-v2`, `pqKid: insumer-attest-pq1`. No balance figure appears anywhere.
 
 ### P2. Signed attestation, condition not met
 

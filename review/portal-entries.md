@@ -6,7 +6,7 @@ What goes into the review form at platform.openai.com when the package is submit
 
 1. **Prompt:** Use InsumerAPI to check whether wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 holds at least 1 ETH on Ethereum, and show me the attestation ID and signing key IDs.
    **Tool:** `insumer_attest`
-   **Expected:** Reports `met: true`, an attestation ID (`ATST-...`), `kid: insumer-attest-v2`, `pqKid: insumer-attest-pq1`, and the block the state was read at. No balance figure appears.
+   **Expected:** Reports `met: true`, an attestation ID (`ATST-...`), `kid: insumer-attest-v2`, `pqKid: insumer-attest-pq1`. No balance figure appears.
 
 2. **Prompt:** Use InsumerAPI to check whether the same wallet is a registered ERC-8004 agent with agent ID 1 on Base.
    **Tool:** `insumer_attest`
