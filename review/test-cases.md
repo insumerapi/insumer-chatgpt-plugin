@@ -32,9 +32,9 @@ The wallet used throughout is `0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045` (vita
 
 ### P5. Merchant directory and discount check
 
-**Prompt:** Use InsumerAPI to look up the merchant "acme-coffee" and tell me what discount wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 would get there.
+**Prompt:** Use InsumerAPI to look up the merchant "skyemeta-demo-store" and tell me what discount wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 would get there.
 
-**Expected:** `insumer_get_merchant` then `insumer_check_discount` are called. The answer gives the merchant's name and tiers and the resulting discount percentage, with no balance figure.
+**Expected:** `insumer_get_merchant` then `insumer_check_discount` are called. The answer gives the merchant's name (Skye Meta Demo Store) and tiers and the resulting discount percentage: 5% for a wallet that has not proven control, 10% if it does. No balance figure appears.
 
 ## Negative cases
 

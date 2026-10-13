@@ -20,9 +20,9 @@ What goes into the review form at platform.openai.com when the package is submit
    **Tool:** `insumer_jwks`
    **Expected:** Names the five key IDs (three ECDSA: `insumer-attest-v1`, `insumer-attest-v2`, `insumer-trust-v2`; two post-quantum: `insumer-attest-pq1`, `insumer-trust-pq1`), says to match keys by `kid`, and points at the `insumer-verify` package.
 
-5. **Prompt:** Use InsumerAPI to look up the merchant "acme-coffee" and tell me what discount wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 would get there.
+5. **Prompt:** Use InsumerAPI to look up the merchant "skyemeta-demo-store" and tell me what discount wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 would get there.
    **Tools:** `insumer_get_merchant`, then `insumer_check_discount`
-   **Expected:** Gives the merchant's name and tiers and the resulting discount percentage, with no balance figure.
+   **Expected:** Gives the merchant's name (Skye Meta Demo Store) and tiers and the resulting discount percentage: 5% for a wallet that has not proven control, 10% if it does. No balance figure appears.
 
 ## Negative cases (the plugin should not be used)
 
