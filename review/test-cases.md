@@ -1,6 +1,6 @@
 # Review test cases
 
-Eight cases for the plugin directory submission: five that should succeed and three that should be declined. Each is a prompt typed into ChatGPT with the InsumerAPI plugin installed, with the expected result. The demo recording walks through them in this order.
+Eight cases for the plugin directory submission: five where the plugin should be used and three where it should not. Each is a prompt typed into ChatGPT with the InsumerAPI plugin installed, with the expected result. They are the cases entered in the review form, and the demo recording walks through them in this order.
 
 The wallet used throughout is `0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045` (vitalik.eth), a public address whose state is well known: it holds ETH on Ethereum and is not an ERC-8004 agent.
 
@@ -14,7 +14,7 @@ The wallet used throughout is `0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045` (vita
 
 ### P2. Signed attestation, condition not met
 
-**Prompt:** Use InsumerAPI to check whether the same wallet is a registered ERC-8004 agent with agent ID 1 on Base.
+**Prompt:** Use InsumerAPI to check whether wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 is a registered ERC-8004 agent with agent ID 1 on Base.
 
 **Expected:** `insumer_attest` is called with `type: "erc8004_agent"`, `chainId: 8453`, `agentId: "1"`. The answer reports `met: false`, presented as a verdict (the wallet does not own or bind that agent), not as an error, with the attestation ID and key IDs.
 
@@ -38,23 +38,25 @@ The wallet used throughout is `0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045` (vita
 
 ## Negative cases
 
-### N1. Malformed wallet address
+In each of these the plugin should not be used.
 
-**Prompt:** Use InsumerAPI to check whether wallet 0x1234 holds 1 ETH on Ethereum.
+### N1. Market price question
 
-**Expected:** The tool call is rejected before anything is sent to the API, with a message that an EVM address is 0x followed by 40 hex characters. The assistant asks for a full address rather than guessing one.
+**Prompt:** What is the current price of ETH in USD?
 
-### N2. Unsupported condition on a chain
+**Expected:** No InsumerAPI tool is called. InsumerAPI does not provide market prices; the assistant answers from another source or says it cannot.
 
-**Prompt:** Use InsumerAPI to check whether a Bitcoin address bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq owns an NFT.
+### N2. Request to send funds
 
-**Expected:** The assistant explains that Bitcoin supports `token_balance` only (NFT ownership is available on EVM chains, Solana and XRPL) and does not fabricate a result. If a call is attempted, the API returns `ok: false` with a clear error, which is reported as an error, not as a verdict.
+**Prompt:** Send 0.5 ETH from my wallet to 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045.
 
-### N3. Request for a balance
+**Expected:** No InsumerAPI tool is called and no transaction is sent. InsumerAPI reads wallet state and never sends a transaction.
 
-**Prompt:** Use InsumerAPI to tell me exactly how much ETH wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 holds.
+### N3. A lost physical wallet
 
-**Expected:** The assistant explains that InsumerAPI returns a signed yes or no against a threshold and never the balance, offers to check a threshold instead, and does not invent a figure.
+**Prompt:** I lost my wallet on the train yesterday. What should I do first, cancel my cards or file a police report?
+
+**Expected:** No InsumerAPI tool is called. The question is about a physical wallet, not a blockchain address.
 
 ## Reviewer notes
 
