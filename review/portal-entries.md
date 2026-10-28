@@ -1,6 +1,8 @@
-# Review form entries for version 0.2.0
+# Review form entries for version 0.2.1
 
-What is saved in the review form at platform.openai.com for the 0.2.0 draft (read back from the portal on 2026-10-13). The form keeps its entries across a cancelled review and a new upload. Three positive cases were edited that day: case 1 (expected output), case 3 (ten dimensions) and case 5 (a store that is in the public directory). The three negative cases are the 2026-10-02 originals, unchanged. The video link is the 2026-10-13 recording, which shows these eight cases.
+**0.2.1 (built 2026-10-28):** 0.2.0 was approved and published on 2026-10-28. 0.2.1 changes one skill, `insumer-auth` (vendored from `insumer-agent-skills@bc6b72c`), to the current on-chain key flow. The hosted tools, the listing text, the test cases and the video are unchanged, so every entry below carries over; only the release notes are new.
+
+What was saved in the review form at platform.openai.com for the 0.2.0 draft (read back from the portal on 2026-10-13). The form keeps its entries across a cancelled review and a new upload. Three positive cases were edited that day: case 1 (expected output), case 3 (ten dimensions) and case 5 (a store that is in the public directory). The three negative cases are the 2026-10-02 originals, unchanged. The video link is the 2026-10-13 recording, which shows these eight cases.
 
 ## Positive cases (the plugin should be used)
 
@@ -40,5 +42,7 @@ What is saved in the review form at platform.openai.com for the 0.2.0 draft (rea
 https://youtu.be/mM-Eq7q4Vgo
 
 ## Release notes
+
+0.2.1: the insumer-auth skill follows the current on-chain key flow: USDC only, on eight supported chains, with a signature from the paying wallet. The hosted tools and the other six skills are unchanged.
 
 0.2.0: first release. Connects to the hosted InsumerAPI MCP server (api.insumermodel.com/mcp, no account or key) with ten tools: signing keys, condition attestation, compliance templates, wallet trust profiles (single and batch), the merchant and token directories, a discount check, and discount-code validation. Seven skills are included; six cover the same work through the REST API with your own key, including discount codes. Every signed result is signed twice, with ES256 and with a post-quantum ML-DSA-65 signature, and is verifiable offline with insumer-verify. The shared server is rate limited per day; when the limit is reached, signed-result tools are declined until 00:00 UTC.

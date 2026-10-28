@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "insumer",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Check what a wallet holds, with a signed yes or no. InsumerAPI wallet auth for AI agents: token balances, NFTs, EAS attestations, ERC-8004 agents and trust profiles across 37 chains, never the balance. Seven skills plus the hosted MCP server at api.insumermodel.com/mcp.",
   "author": {
     "name": "InsumerAPI",
