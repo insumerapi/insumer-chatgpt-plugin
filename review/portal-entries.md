@@ -1,4 +1,6 @@
-# Review form entries for version 0.2.1
+# Review form entries for version 0.2.2
+
+**0.2.2 (built 2026-10-29):** changes one skill, `insumer-attest` 0.3.2 (vendored from `insumer-agent-skills@27877c9`): on Solana, `nft_ownership` takes a verified collection address (any NFT in it counts) or one NFT's mint. Everything else carries over.
 
 **0.2.1 (built 2026-10-28):** 0.2.0 was approved and published on 2026-10-28. 0.2.1 changes one skill, `insumer-auth` (vendored from `insumer-agent-skills@bc6b72c`), to the current on-chain key flow. The hosted tools, the listing text, the test cases and the video are unchanged, so every entry below carries over; only the release notes are new.
 
@@ -42,6 +44,8 @@ What was saved in the review form at platform.openai.com for the 0.2.0 draft (re
 https://youtu.be/mM-Eq7q4Vgo
 
 ## Release notes
+
+0.2.2: the insumer-attest skill explains Solana NFT conditions: name a verified collection address and any NFT in that collection counts, or name one NFT's mint for that NFT only. The hosted tools and the other six skills are unchanged.
 
 0.2.1: the insumer-auth skill follows the current on-chain key flow: USDC only, on eight supported chains, with a signature from the paying wallet. The hosted tools and the other six skills are unchanged.
 
