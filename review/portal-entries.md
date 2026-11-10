@@ -1,4 +1,6 @@
-# Review form entries for version 0.2.2
+# Review form entries for version 0.2.3
+
+**0.2.3 (built 2026-11-10):** adds one skill, `insumer-x402-recipes` 0.1.0 (vendored from `insumer-agent-skills@c05e498`): the Agentic Cookbook for x402, five recipes that check a wallet with InsumerAPI before an agent pays another x402 service. Everything else carries over.
 
 **0.2.2 (built 2026-10-29):** changes one skill, `insumer-attest` 0.3.2 (vendored from `insumer-agent-skills@27877c9`): on Solana, `nft_ownership` takes a verified collection address (any NFT in it counts) or one NFT's mint. Everything else carries over.
 
@@ -44,6 +46,8 @@ What was saved in the review form at platform.openai.com for the 0.2.0 draft (re
 https://youtu.be/mM-Eq7q4Vgo
 
 ## Release notes
+
+0.2.3: adds the insumer-x402-recipes skill, from the Agentic Cookbook for x402: five recipes that check a wallet with InsumerAPI before an agent pays another x402 service, such as sending a reward only to members or checking what an agent holds before hiring it. The hosted tools and the other seven skills are unchanged.
 
 0.2.2: the insumer-attest skill explains Solana NFT conditions: name a verified collection address and any NFT in that collection counts, or name one NFT's mint for that NFT only. The hosted tools and the other six skills are unchanged.
 

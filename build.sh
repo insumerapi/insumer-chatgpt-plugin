@@ -3,7 +3,7 @@
 #
 #   ./build.sh            # vendors the skills, scans, writes dist/insumer-plugin-<version>.zip
 #
-# The six REST skills are vendored from ../insumer-agent-skills (the same
+# The seven REST skills are vendored from ../insumer-agent-skills (the same
 # source as the Grok plugin); SKILLS_SOURCE records the commit. The ZIP is
 # refused if anything in it looks like a secret, an internal hostname, or a
 # vendor name that never appears in public material.
@@ -15,7 +15,7 @@ VERSION="$(python3 -c 'import json;print(json.load(open("plugin.json"))["version
 OUT="dist/insumer-plugin-${VERSION}.zip"
 
 # 1. Vendor the skills (SKILL.md, references, scripts; no caches).
-for s in insumer-auth insumer-attest insumer-trust insumer-trust-batch insumer-jwks-verify insumer-discount; do
+for s in insumer-auth insumer-attest insumer-trust insumer-trust-batch insumer-jwks-verify insumer-discount insumer-x402-recipes; do
   rm -rf "skills/$s"
   rsync -a --exclude '__pycache__' --exclude '*.pyc' "$SKILLS_REPO/skills/$s/" "skills/$s/"
 done
