@@ -1,4 +1,6 @@
-# Review form entries for version 0.2.3
+# Review form entries for version 0.2.4
+
+**0.2.4 (built 2026-11-13):** changes one skill, `insumer-attest` 0.3.3 (vendored from `insumer-agent-skills@f3dbbd0`): its chain reference lists Tempo (4217), which has no native coin, and no longer lists Blast (81457), which has shut down. Everything else carries over.
 
 **0.2.3 (built 2026-11-10):** adds one skill, `insumer-x402-recipes` 0.1.0 (vendored from `insumer-agent-skills@c05e498`): the Agentic Cookbook for x402, five recipes that check a wallet with InsumerAPI before an agent pays another x402 service. Everything else carries over.
 
